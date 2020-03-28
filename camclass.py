@@ -5,15 +5,21 @@ import torch
 import numpy as np
 import cv2
 
+import sys
+
 import time
 from PIL import Image
 from matplotlib import pyplot as plt
 
 import time
 
-cap = cv2.VideoCapture(0)
-cap.set(cv2.CAP_PROP_FRAME_WIDTH, 600)
-cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 600)
+
+if len(sys.argv) <= 1 :
+	print("You have to specify the path to the model parameters file (.pth)")
+	sys.exit(1)
+
+
+model_path = sys.argv[1]
 
 transformations = transforms.Compose([
 	transforms.ToPILImage(),
@@ -37,9 +43,14 @@ in_feats = model.fc.in_features # Take the old in_features
 
 model.fc = nn.Linear(in_feats, len(label_txt)) # Replace the model classifier
 model.fc.require_grad = False
-model.load_state_dict(torch.load("./models/naruto_mod_2.pth", map_location='cpu'))
+model.load_state_dict(torch.load(model_path, map_location='cpu'))
 
 prediction_txt = "Starting prediction !"
+
+
+cap = cv2.VideoCapture(0)
+cap.set(cv2.CAP_PROP_FRAME_WIDTH, 600)
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 600)
 
 model.eval()
 while(True):
