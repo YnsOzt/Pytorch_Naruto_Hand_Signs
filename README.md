@@ -11,7 +11,7 @@ python camclass.py ./path/to/model.pth
 ```
 
 # More information
-The main weakness of this dataset is that all the hand sign are centered, so whanever you're moving your hands far from the center, the models doesn't predict correctly.
+The main weakness of this dataset is that all the hand sign are centered, so whanever you're moving your hands far from the center, the model doesn't predict correctly.
 
 # Dataset
 Link to the dataset: https://www.kaggle.com/vikranthkanumuru/naruto-hand-sign-dataset
