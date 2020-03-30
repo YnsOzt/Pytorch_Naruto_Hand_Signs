@@ -1,5 +1,6 @@
 import torchvision.models as models
 import torchvision.transforms as transforms
+import torch.nn.functional as F
 import torch.nn as nn
 import torch
 import numpy as np
@@ -60,11 +61,11 @@ while True:
 
     output = model(transformed_frame.unsqueeze(0))
     preds = torch.argmax(output, -1)
-
-    prediction_txt = label_txt[preds]
+    probabilities = F.softmax(output[0], dim=-1)
+    prediction_txt = label_txt[preds] + "(" + str(int(probabilities[preds].item()*100)) + "%)"
     start = time.time()
 
-    cv2.putText(frame, prediction_txt, (0, 35), cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 0, 255), thickness=2)
+    cv2.putText(frame, prediction_txt, (0, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 255), thickness=2)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
