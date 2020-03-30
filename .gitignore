@@ -1,5 +1,5 @@
-./models
+models/
 
-./idea
+.idea
 
 .DS_Store
