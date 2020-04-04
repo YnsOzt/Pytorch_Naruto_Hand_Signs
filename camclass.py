@@ -7,6 +7,7 @@ import numpy as np
 import cv2
 
 import sys
+import argparse
 
 import time
 from PIL import Image
@@ -14,11 +15,17 @@ from matplotlib import pyplot as plt
 
 import time
 
-if len(sys.argv) <= 1:
-    print("You have to specify the path to the model parameters file (.pth)")
-    sys.exit(1)
+parser = argparse.ArgumentParser()
+parser.add_argument("--model_path", dest="model_path", help="Path to the pth file of the pretrained model",
+                    type=str)
 
-model_path = sys.argv[1]
+parser.add_argument("--model_type", dest="model_type", help="Currently support : resnet18 | mobilenet",
+                    type=str)
+
+args = parser.parse_args()
+model_path = args.model_path
+model_type = args.model_type
+
 
 transformations = transforms.Compose([
     transforms.ToPILImage(),
@@ -31,17 +38,35 @@ transformations = transforms.Compose([
 
 label_txt = ['bird', 'boar', 'dog', 'dragon', 'hare', 'horse', 'monkey', 'ox', 'ram', 'rat', 'snake', 'tiger', 'zero']
 
-model = models.resnet18(pretrained=True)
+if model_type == "resnet18":
+	model = models.resnet18(pretrained=True)
 
-# Freeze training for all layers
-for param in model.parameters():
-    param.require_grad = False
+	# Freeze training for all layers
+	for param in model.parameters():
+	    param.require_grad = False
 
-# Newly created modules have require_grad=True by default
-in_feats = model.fc.in_features  # Take the old in_features
+	# Newly created modules have require_grad=True by default
+	in_feats = model.fc.in_features  # Take the old in_features
 
-model.fc = nn.Linear(in_feats, len(label_txt))  # Replace the model classifier
-model.fc.require_grad = False
+	model.fc = nn.Linear(in_feats, len(label_txt))  # Replace the model classifier
+	model.fc.require_grad = False
+
+elif model_type == "mobilenet":
+	model = models.mobilenet_v2(pretrained=True)
+
+	# Freeze training for all layers
+	for param in model.parameters():
+	    param.require_grad = False
+
+	# Newly created modules have require_grad=True by default
+	in_feats = model.classifier[1].in_features # Take the old in_features
+
+	model.classifier[1] = nn.Linear(in_feats, len(label_txt)) # Replace the model classifier
+	model.classifier[1].require_grad = False
+
+else:
+	sys.exit("The model type {} is not implemented yet !".format(model_type))
+
 model.load_state_dict(torch.load(model_path, map_location='cpu'))
 
 prediction_txt = "Starting prediction !"
