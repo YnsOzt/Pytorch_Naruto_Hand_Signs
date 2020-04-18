@@ -10,7 +10,7 @@ You can download the dataset and launch the entier colaboratory which will train
 python camclass.py ./path/to/model.pth
 ```
 
-Send me a pm if you want me to provide the model that I've trained.
+Send me a pm if you want me to provide you the pretrained model.
 
 # More information
 The main weakness of this dataset is that all the hand sign are centered, so whanever you're moving your hands far from the center, the model doesn't predict correctly.
